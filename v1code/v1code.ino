@@ -1,45 +1,3 @@
-void setup() {
-  // Define input variables here
-
-  // set motor configuration: 0 - DC with encoder, 1 - Stepper
-  // #define MOTOR1TYPE 1
-  // #define MOTOR2TYPE 0
-
-  // #if MOTOR1TYPE
-  //   #define DIRPIN1 2
-  //   #define STEPPIN1 3
-  //   pinMode(stepPin, OUTPUT);
-  //   pinMode(dirPin, OUTPUT);
-  // #elif
-  //   #ifndef _AF_MOTOR_H
-  //     #define _AF_MOTOR_H
-  //   #endif
-  //   // set power port on motorshield M1 - M4
-  //   #define POWPORT 1
-  //   // two pins to read encoder output
-  //   #define ENC1PIN1 5
-  //   #define ENC1PIN2 6
-  // #endif
-
-  //  #if MOTOR2TYPE
-  //   #define DIRPIN2 2
-  //   #define STEPPIN2 3
-  //   pinMode(stepPin, OUTPUT);
-  //   pinMode(dirPin, OUTPUT);
-  // #elif
-  //   #ifndef _AF_MOTOR_H
-  //     #define _AF_MOTOR_H
-  //   #endif
-  //   // set power port on motorshield M1 - M4
-  //   #define POWPORT 2
-  //   // two pins to read encoder output
-  //   #define ENC1PIN1 7
-  //   #define ENC1PIN2 8
-  // #endif
-
-  #include <AFMotor.h>
-}
-
 // create motor structs with attributes
 
 struct dc {
@@ -53,7 +11,41 @@ struct stepper {
   int stepPin;
 }
 
-// conditional function defintions depending on motor type
+void setup() {
+  // Define input variables here
+  #include <AFMotor.h>
+
+  // Macros
+  #define CW 0
+  #define CCW 1
+  
+  // create motors
+  struct dc motor1;
+  struct dc motor2;
+
+  motor1.powerPort = 1;
+  motor1.enc1Pin = 2;
+  motor1.enc2Pin = 3;
+
+  motor2.powerPort = 1;
+  motor2.enc1Pin = 2;
+  motor2.enc2Pin = 3;
+
+  AF_DCMotor m1(motor1.powerPort);
+  AF_DCMotor m2(motor2.powerPort);
+
+  // enter all the dimensions
+}
+
+void moveNStepsDC(struct dc motor, int nSteps, int dir, int speed) {
+  int stepsCompleted = 0;
+  motor.setSpeed(speed);
+  while (stepsCompleted < nSteps) {
+    motor.run(dir);
+    
+  }
+  motor.run(release);
+}
 
 
 void loop() {
