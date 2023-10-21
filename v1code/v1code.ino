@@ -1,22 +1,19 @@
-// create motor structs with attributes
 #include <AFMotor.h>
 #include <Encoder.h>
 
-  // Macros
-  #define CW 0
-  #define CCW 1
+// Macros
+#define CW 0
+#define CCW 1
 
 class dc {
 public:
   int powerPort;
   int enc1Pin;
   int enc2Pin;
+  Encoder enc;
+  AF_DCMotor motor;
 
-  dc(int pP, int e1P, int e2P) {
-    powerPort = pP;
-    enc1Pin = e1P;
-    enc2Pin = e2P;
-    Encoder enc(enc1Pin, enc2Pin);
+  dc(int pP, int e1P, int e2P, int motorPort) : powerPort(pP), enc1Pin(e1P), enc2Pin(e2P), enc(e1P, e2P), motor(motorPort) {
   }
 };
 
@@ -25,51 +22,75 @@ struct stepper {
   int stepPin;
 };
 
+dc motor1(1, 7, 6, 1); // Declare and initialize motor1 in the global scope
+dc motor2(1, 7, 6, 2); // Declare and initialize motor2 in the global scope
+
 void setup() {
+  Serial.begin(9600);
   // Define input variables here
-  
-  // create motors
-  struct dc motor1;
-  struct dc motor2;
-
-  motor1.powerPort = 1;
-  motor1.enc1Pin = 2;
-  motor1.enc2Pin = 3;
-  motor1.enc = Encoder(motor1.enc1Pin, motor1.enc2Pin = 3);
-
-  motor2.powerPort = 1;
-  motor2.enc1Pin = 2;
-  motor2.enc2Pin = 3;
-
-  AF_DCMotor m1(motor1.powerPort);
-  AF_DCMotor m2(motor2.powerPort);
-
-
-  // enter all the dimensions
 }
 
-// void moveNStepsDC(struct dc motor, int nSteps, int dir, int speed) {
-//   motor.setSpeed(speed);
-//   motor.run(dir);
-//   initPos = motor.enc.read()
-//   desiredStepDelta = 
-//   while (motor.enc.read() - initPos != (2*dir - 1)*nSteps) {  }
-//   motor.run(release);
-//   motor.enc.write(0);
-// }
+void moveNStepsDC(dc motor, int nSteps, int dir, int speed) {
 
-void moveNStepsDC(AF_DCMotor motor, int nSteps, int dir, int speed);
 
-moveNStepsDC(motor, nSteps, dir, speed) {
-  motor.setSpeed(speed);
-  motor.run(dir);
-  while (abs(motor.enc.read()) < nSteps) {  }
-  motor.run(release);
-  motor.enc.write(0);
+  long initPos = motor.enc.read();
+  int position = 0;
+  int oldSignal = motor.enc.read();
+  Serial.println("stop1");
+  motor.motor.setSpeed(speed);
+  Serial.println("stop2");
+
+  motor.motor.run(0);
+
+  Serial.println("stop3");
+
+
+  while (abs(position - 0) < nSteps) {
+    if (motor.enc.read() != oldSignal) {
+      position += 1;
+      oldSignal = motor.enc.read();
+    }
+    Serial.println("stop4");
+    //Serial.println(position);
+    //Move the motor
+  }
+
+  //motor.motor.run(RELEASE);
+  //motor.enc.write(0);
 }
 
+int oldSignal = motor1.enc.read();
+// Serial.println("oldsignal:");
+// Serial.println(oldSignal);
+int position = 0;
 
 void loop() {
-  moveNStepsDC(m1, 2000, FORWARD, 200);
+  // Serial.println("I am starting");
+  // moveNStepsDC(motor1, 2000, FORWARD, 5000); // Call the function with motor1]
+  // Serial.println("finished first step");
+  // motor1.motor.run(RELEASE);  
+  // moveNStepsDC(motor1, 2000, FORWARD, 5000); // Call the function with motor1]
+  // Serial.println("finished2");
+  // delay(1000);  
+  // motor1.motor.run(RELEASE);  
+  // motor1.motor.setSpeed(2000);
+  // motor1.motor.run(1);
+  motor1.motor.run(RELEASE);  
 
+  //Serial.print("HERE");
+    //Serial.println(motor1.enc.read());
+    if (motor1.enc.read() != oldSignal) {
+    position += 1;
+    oldSignal = motor1.enc.read();
+    //Serial.print("position");
+    Serial.println(position);
+    }
+
+}
+
+int main() {
+  setup();
+  while (true) {
+    loop();
+  }
 }
