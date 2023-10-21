@@ -37,20 +37,31 @@ void moveNStepsDC(dc motor, int nSteps, int dir, int speed) {
   int position = 0;
   int oldSignal = motor.enc.read();
   Serial.println("stop1");
-  motor.motor.setSpeed(speed);
+  //motor.motor.setSpeed(speed);
   Serial.println("stop2");
 
-  motor.motor.run(0);
+  //motor.motor.run(1);
 
   Serial.println("stop3");
 
+  motor.motor.setSpeed(speed);
+  motor.motor.run(dir);
 
-  while (abs(position - 0) < nSteps) {
+
+  //while (abs(position - 0) < nSteps) {
+  while (abs(position) < nSteps) {
+
+    //if (motor.enc.read() != oldSignal) {
     if (motor.enc.read() != oldSignal) {
-      position += 1;
+      position += 2*dir-1;
       oldSignal = motor.enc.read();
+      Serial.println(position);
     }
-    Serial.println("stop4");
+
+
+
+
+    //Serial.println("stop4");
     //Serial.println(position);
     //Move the motor
   }
@@ -59,15 +70,17 @@ void moveNStepsDC(dc motor, int nSteps, int dir, int speed) {
   //motor.enc.write(0);
 }
 
-int oldSignal = motor1.enc.read();
-// Serial.println("oldsignal:");
-// Serial.println(oldSignal);
-int position = 0;
+// int oldSignal = motor1.enc.read();
+// // Serial.println("oldsignal:");
+// // Serial.println(oldSignal);
+// int position = 0;
 
 void loop() {
-  // Serial.println("I am starting");
-  // moveNStepsDC(motor1, 2000, FORWARD, 5000); // Call the function with motor1]
-  // Serial.println("finished first step");
+  Serial.println("I am starting");
+  moveNStepsDC(motor1, 100, FORWARD, 500); // Call the function with motor1]
+  Serial.println("finished first step");
+  moveNStepsDC(motor1, 100, BACKWARD, 500); // Call the function with motor1]
+
   // motor1.motor.run(RELEASE);  
   // moveNStepsDC(motor1, 2000, FORWARD, 5000); // Call the function with motor1]
   // Serial.println("finished2");
@@ -77,14 +90,14 @@ void loop() {
   // motor1.motor.run(1);
   motor1.motor.run(RELEASE);  
 
-  //Serial.print("HERE");
-    //Serial.println(motor1.enc.read());
-    if (motor1.enc.read() != oldSignal) {
-    position += 1;
-    oldSignal = motor1.enc.read();
-    //Serial.print("position");
-    Serial.println(position);
-    }
+  // //Serial.print("HERE");
+  //   //Serial.println(motor1.enc.read());
+  //   if (motor1.enc.read() != oldSignal) {
+  //   position += 1;
+  //   oldSignal = motor1.enc.read();
+  //   //Serial.print("position");
+  //   Serial.println(position);
+    //}
 
 }
 
