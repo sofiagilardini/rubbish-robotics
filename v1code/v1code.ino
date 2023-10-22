@@ -10,6 +10,7 @@ public:
   int powerPort;
   int enc1Pin;
   int enc2Pin;
+  int position = 0;
   Encoder enc;
   AF_DCMotor motor;
 
@@ -30,11 +31,9 @@ void setup() {
   // Define input variables here
 }
 
-void moveNStepsDC(dc motor, int nSteps, int dir, int speed) {
-
+int moveNStepsDC(dc motor, int nSteps, int dir, int speed, int initpos) {
 
   long initPos = motor.enc.read();
-  int position = 0;
   int oldSignal = motor.enc.read();
   Serial.println("stop1");
   //motor.motor.setSpeed(speed);
@@ -47,24 +46,27 @@ void moveNStepsDC(dc motor, int nSteps, int dir, int speed) {
   motor.motor.setSpeed(speed);
   motor.motor.run(dir);
 
+  motor.position += initpos;
 
   //while (abs(position - 0) < nSteps) {
-  while (abs(position) < nSteps) {
+  while (abs(motor.position - initpos) < nSteps) {
 
     //if (motor.enc.read() != oldSignal) {
     if (motor.enc.read() != oldSignal) {
-      position += 2*dir-1;
+      if (dir == FORWARD)
+      motor.position += 1;
+      if (dir == BACKWARD)
+      motor.position += -1;
       oldSignal = motor.enc.read();
-      Serial.println(position);
+      Serial.println(motor.position);
     }
 
-
-
-
-    //Serial.println("stop4");
-    //Serial.println(position);
-    //Move the motor
   }
+  
+  int finalpos = motor.position;
+
+  return finalpos;
+
 
   //motor.motor.run(RELEASE);
   //motor.enc.write(0);
@@ -74,21 +76,22 @@ void moveNStepsDC(dc motor, int nSteps, int dir, int speed) {
 // // Serial.println("oldsignal:");
 // // Serial.println(oldSignal);
 // int position = 0;
+long finalpos1 = 0;
 
 void loop() {
   Serial.println("I am starting");
-  moveNStepsDC(motor1, 100, FORWARD, 500); // Call the function with motor1]
+  finalpos1 = moveNStepsDC(motor1, 1000, FORWARD, 500, finalpos1); // Call the function with motor1
   Serial.println("finished first step");
-  moveNStepsDC(motor1, 100, BACKWARD, 500); // Call the function with motor1]
+  finalpos1 = moveNStepsDC(motor1, 500, BACKWARD, 500, finalpos1); // Call the function with motor1]
 
-  // motor1.motor.run(RELEASE);  
+  //motor1.motor.run(RELEASE);  
   // moveNStepsDC(motor1, 2000, FORWARD, 5000); // Call the function with motor1]
   // Serial.println("finished2");
   // delay(1000);  
   // motor1.motor.run(RELEASE);  
   // motor1.motor.setSpeed(2000);
   // motor1.motor.run(1);
-  motor1.motor.run(RELEASE);  
+  //motor1.motor.run(RELEASE);  
 
   // //Serial.print("HERE");
   //   //Serial.println(motor1.enc.read());
